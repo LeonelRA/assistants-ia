@@ -1,26 +1,29 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Body, Form
+from fastapi import APIRouter, HTTPException, UploadFile, File, Body, Form, FastAPI, Request
+from fastapi.responses import PlainTextResponse
+from pydantic import BaseModel
 from typing import List, Dict, Optional
 from src.services.chat_service import ChatService
-from src.services.vector_store_service import VectorStoreService
 from src.services.assistant_service import AssistantService
 from src.models.assistant import UpdateAssistantRequest
-import json
-import base64
-import tempfile
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-import io
-import wave
-import struct
-import numpy as np
+import json
+from aiortc import RTCPeerConnection, RTCSessionDescription
+import logging
+from fastapi.responses import PlainTextResponse
+import asyncio
 
 # Load environment variables
 load_dotenv()
 
+# Configuración para loguear eventos
+logging.basicConfig(level=logging.INFO)
+class SDPRequest(BaseModel):
+    sdp: str
+
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 router = APIRouter(prefix="/assistants", tags=["assistants"])
 
 # Obtener todos los asistentes
@@ -75,3 +78,6 @@ async def chat_with_assistant(
     
     return await ChatService.chat_with_assistant(assistant_id, message, audio)
 
+@router.get("/{assistant_id}/session-realtime")
+async def get_session_realtime_route(assistant_id: str):
+    return await ChatService.get_session_realtime(assistant_id)

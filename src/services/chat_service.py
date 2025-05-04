@@ -4,6 +4,7 @@ from fastapi import HTTPException, UploadFile
 import os
 import re
 import tempfile
+import httpx
 
 # Load environment variables
 load_dotenv()
@@ -104,3 +105,30 @@ class ChatService:
                 detail=error_message
             )
 
+
+    @staticmethod
+    async def get_session_realtime(assistant_id: str):
+        try:
+            # Obtener la información del asistente
+            assistant = client.beta.assistants.retrieve(assistant_id=assistant_id)
+
+            # Hacer una solicitud POST personalizada al endpoint
+            response = client.post(
+                "/realtime/sessions",
+                cast_to=httpx.Response,
+                body={
+                    "model": "gpt-4o-realtime-preview-2024-12-17",
+                    "instructions": assistant.instructions,
+                },
+            )
+            # Obtener los datos en formato JSON
+            data = response.json()
+            return data
+        except HTTPException as he:
+            raise he
+        except Exception as error:
+            print(f"Error in /session-realtime: {error}")
+            raise HTTPException(
+                status_code=500,
+                detail="Internal Server Error"
+            )

@@ -52,3 +52,26 @@ Once the server is running, you can access the interactive API documentation at:
 
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
+
+/app
+├── main.py # Punto de entrada de la app (instancia de FastAPI)
+├── api/ # Define rutas (routers)
+│ ├── **init**.py
+│ ├── users.py # Rutas relacionadas al recurso "users"
+│ └── items.py # Otro recurso
+├── models/ # Modelos SQLAlchemy
+│ ├── **init**.py
+│ └── user.py
+├── schemas/ # Pydantic schemas (request/response)
+│ ├── **init**.py
+│ └── user.py
+├── crud/ # Operaciones CRUD con la DB
+│ ├── **init**.py
+│ └── user.py
+├── db/ # Configuración de la base de datos
+│ ├── **init**.py
+│ ├── base.py # Base de modelos
+│ └── session.py # Session y engine
+└── core/ # Configuración del proyecto
+├── **init**.py
+└── config.py # Variables de entorno, settings
